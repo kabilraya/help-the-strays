@@ -1,0 +1,89 @@
+@import "../../App.scss";
+.RightBar {
+  @include themify($themes) {
+    flex: 3;
+    position: sticky;
+    height: calc(100vh - 50px);
+    top: 50px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    // margin-left: 10px;
+    background-color: themed("bgSoft");
+
+    padding: 5px; // background-color: white;
+    .container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 20px;
+      .item {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        background-color: white;
+        background-color: themed("bg");
+        span {
+          color: themed("textColorsoft");
+        }
+        .notification {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+
+          img {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+          span {
+            font-size: 14px;
+          }
+        }
+        .user {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          .userinfo {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            img {
+              width: 35px;
+              height: 35px;
+              border-radius: 50%;
+              object-fit: cover;
+            }
+
+            span {
+              font-size: 14px;
+            }
+          }
+          .buttons {
+            display: flex;
+            align-item: center;
+            gap: 4px;
+            button {
+              border: none;
+              padding: 5px;
+              color: white;
+              cursor: pointer;
+              border-radius: 10px;
+
+              &:first-child {
+                background-color: blue;
+              }
+              &:last-child {
+                background-color: red;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

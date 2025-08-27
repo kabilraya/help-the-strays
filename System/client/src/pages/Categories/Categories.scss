@@ -1,0 +1,9 @@
+@import "../../App.scss";
+
+.categories {
+  @include themify($themes) {
+    background-color: themed("bgSoft");
+    min-height: calc(100vh - 50px); // Full height minus navbar/header if any
+    padding: 20px 70px;
+  }
+}

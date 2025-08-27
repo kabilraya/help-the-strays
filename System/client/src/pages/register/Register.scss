@@ -1,0 +1,80 @@
+.main {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: rgb(240, 242, 245);
+  .card {
+    background-color: white;
+    display: flex;
+    width: 60%;
+    border-radius: 20px;
+    overflow: hidden;
+    .left {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      flex: 1;
+      padding: 50px;
+      justify-content: center;
+      h1 {
+        color: rebeccapurple;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+      }
+      input {
+        border: none;
+        border-bottom: 2px solid lightgray;
+        padding: 20px 10px;
+      }
+      button {
+        width: 50%;
+        padding: 10px;
+        border: none;
+        background-color: #938eef;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 15px;
+        border-radius: 10px;
+      }
+    }
+
+    .right {
+      background: url("https://images.pexels.com/photos/26263124/pexels-photo-26263124.jpeg")
+        center;
+      background-size: cover;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      flex: 1;
+      padding: 50px;
+      color: white;
+      h1 {
+        font-size: 75px;
+        line-height: 100px;
+      }
+      span {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      button {
+        width: 50%;
+        background-color: white;
+        color: rebeccapurple;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        padding: 10px;
+      }
+    }
+  }
+}
