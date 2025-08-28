@@ -38,12 +38,15 @@ def tokenize(text:str) -> List[str]:
 #     return idx[test_n:],idx[:test_n]
 
 class NaiveBayesImplementation:
-    def __init__(self,alpha:float=1.0):
+    def __init__(self,alpha:float=1.0,class_weights: dict = None):
         self.alpha = alpha
         self.classes_ = []
         self.vocab_ = {}
         self.class_priors = {}
         self.likelihoods_ = {}
+        self.class_weights = class_weights
+
+        
 
     def fit(self,X_tokens:List[List[str]],y:List[str]) -> None:
         vocab = {}
@@ -53,11 +56,20 @@ class NaiveBayesImplementation:
                     vocab[t] = len(vocab)
         self.vocab_ = vocab
 
+        
         classes = sorted(set(y))
         self.classes_ = classes
         total_docs = len(y)
         counts = Counter(y)
-        self.class_priors_ = {c:math.log(counts[c]/total_docs) for c in classes }
+        if self.class_weights:
+            
+            weighted_counts = {c: counts[c] * self.class_weights.get(c, 1.0) 
+                             for c in counts}
+            total_weighted = sum(weighted_counts.values())
+            self.class_priors_ = {c: math.log(weighted_counts[c]/total_weighted) 
+                                for c in classes}
+        else:
+            self.class_priors_ = {c:math.log(counts[c]/total_docs) for c in classes }
         #so this function basically creates a dictionary that stores classes:no of occurences
         #also another dictionary that stores unique words with unique identifiers from the caption
 
