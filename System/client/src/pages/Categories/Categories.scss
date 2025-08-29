@@ -5,5 +5,9 @@
     background-color: themed("bgSoft");
     min-height: calc(100vh - 50px); // Full height minus navbar/header if any
     padding: 20px 70px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
   }
 }

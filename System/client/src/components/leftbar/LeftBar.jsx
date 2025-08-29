@@ -85,7 +85,7 @@ const LeftBar = () => {
               <span>Vaccination</span>
             </div>
           </Link>
-          <Link to="/category/HelpNeeded">
+          <Link to="/category/Help">
             <div className="items">
               <img
                 src={Help}
@@ -95,7 +95,7 @@ const LeftBar = () => {
               <span>Help Needed</span>
             </div>
           </Link>
-          <Link to="/category/AnimalAbuse">
+          <Link to="/category/Illegal Activities">
             <div className="items">
               <img
                 src={AnimalAbuse}
