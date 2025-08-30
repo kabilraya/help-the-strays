@@ -5,7 +5,7 @@ import math
 import json
 from collections import Counter
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Any
 
 STOPWORDS = {
     "a","an","the","and","or","if","in","on","of","for","to","from","is","are","was","were",
@@ -30,88 +30,102 @@ def tokenize(text:str) -> List[str]:
     tokens = TOKEN_RE.findall(text)
     return [t for t in tokens if t not in STOPWORDS and len(t)>1]
 
-# def train_test_split_idx(n:int,test_size:float=0.2,seed:int=42):
-#     rng = np.random.default_rng(seed)
-#     idx = np.arrange(n)
-#     rng.shuffle(idx)
-#     test_n = int(round(n*test_size))
-#     return idx[test_n:],idx[:test_n]
-
 class NaiveBayesImplementation:
-    def __init__(self,alpha:float=1.0,class_weights: dict = None):
+    def __init__(self, alpha:float=1.0, class_weights: dict = None):
         self.alpha = alpha
         self.classes_ = []
         self.vocab_ = {}
-        self.class_priors = {}
+        self.vocab_list_ = []  
+        self.class_priors_ = {}
         self.likelihoods_ = {}
         self.class_weights = class_weights
 
+    def fit(self, X_tokens:List[List[str]], y:List[str]) -> None:
         
-
-    def fit(self,X_tokens:List[List[str]],y:List[str]) -> None:
         vocab = {}
+        vocab_list = []
         for tokens in X_tokens:
             for t in tokens:
                 if t not in vocab:
-                    vocab[t] = len(vocab)
+                    vocab[t] = len(vocab_list)
+                    vocab_list.append(t)
         self.vocab_ = vocab
+        self.vocab_list_ = vocab_list
 
         
         classes = sorted(set(y))
         self.classes_ = classes
         total_docs = len(y)
         counts = Counter(y)
+        
+        
         if self.class_weights:
-            
-            weighted_counts = {c: counts[c] * self.class_weights.get(c, 1.0) 
-                             for c in counts}
+            weighted_counts = {c: counts[c] * self.class_weights.get(c, 1.0) for c in counts}
             total_weighted = sum(weighted_counts.values())
-            self.class_priors_ = {c: math.log(weighted_counts[c]/total_weighted) 
-                                for c in classes}
+            self.class_priors_ = {c: math.log(weighted_counts[c]/total_weighted) for c in classes}
         else:
-            self.class_priors_ = {c:math.log(counts[c]/total_docs) for c in classes }
-        #so this function basically creates a dictionary that stores classes:no of occurences
-        #also another dictionary that stores unique words with unique identifiers from the caption
+            self.class_priors_ = {c: math.log(counts[c]/total_docs) for c in classes}
 
+        
         V = len(vocab)
-        word_counts = {c: np.zeros(V,dtype=int) for c in classes}
+        word_counts = {c: np.zeros(V, dtype=int) for c in classes}
         total_tokens = {c: 0 for c in classes}
 
-        for tokens, cls in zip(X_tokens,y):
+        
+        for tokens, cls in zip(X_tokens, y):
             for t in tokens:
-                j = vocab.get(t)
-                if j is not None:
-                    word_counts[cls][j] +=1
-                    total_tokens[cls] +=1
+                if t in vocab:
+                    j = vocab[t]
+                    word_counts[cls][j] += 1
+                    total_tokens[cls] += 1
+
+        
         self.likelihoods_ = {}
         for c in classes:
             denom = total_tokens[c] + self.alpha * V
-            self.likelihoods_[c] = {j:math.log((cnt + self.alpha)/denom) for j,cnt in enumerate(word_counts[c])}
+            self.likelihoods_[c] = [math.log((word_counts[c][j] + self.alpha) / denom) for j in range(V)]
 
-    def predict_one(self,tokens:List[str])->str:
-        idxs = [self.vocab_[t] for t in tokens if t in self.vocab_]
-        best_c, best_score = None, -1e18
-
+    def predict_one(self, tokens:List[str]) -> str:
+        scores = {}
         for c in self.classes_:
-            score = self.class_priors_[c]
-            like_c = self.likelihoods_[c]
-            for j in idxs:
-                score+=like_c[j]
-            if score>best_score:
-                best_c, best_score = c, score
-        return best_c
+            scores[c] = self.class_priors_[c]
+            for token in tokens:
+                if token in self.vocab_:
+                    word_idx = self.vocab_[token]
+                    scores[c] += self.likelihoods_[c][word_idx]
+                else:
+                   
+                    scores[c] += math.log(1e-10)
+        
+        return max(scores.items(), key=lambda x: x[1])[0]
 
-    def predict(self,X_tokens:List[List[str]]):
-        return [self.predict_one(t) for t in X_tokens]
+    def predict(self, X_tokens:List[List[str]]) -> List[str]:
+        return [self.predict_one(tokens) for tokens in X_tokens]
 
     def to_json(self) -> str:
-        model = {
-            "alpha" :self.alpha,
-            "classes" : self.classes_,
-            "vocab" : self.vocab_,
-            "class_priors_log" : self.class_priors_,
-            "likelihoods_log" : {c: [self.likelihoods_[c][j] for j in range(len(self.vocab_))] for c in self.classes_},
-        }   
-        return json.dumps(model)
+        model_data = {
+            "alpha": self.alpha,
+            "classes": self.classes_,
+            "vocab": self.vocab_,
+            "vocab_list": self.vocab_list_,  
+            "class_priors_log": self.class_priors_,
+            "likelihoods_log": self.likelihoods_,
+        }
+        return json.dumps(model_data, indent=2)
 
+    @classmethod
+    def from_json(cls, json_str: str):
+        model_data = json.loads(json_str)
+        instance = cls(alpha=model_data["alpha"])
+        instance.classes_ = model_data["classes"]
+        instance.vocab_ = model_data["vocab"]
+        instance.vocab_list_ = model_data["vocab_list"]
+        instance.class_priors_ = model_data["class_priors_log"]
+        instance.likelihoods_ = model_data["likelihoods_log"]
+        return instance
 
+# Helper function for loading and using the model
+def load_naive_bayes_model(model_path: str):
+    with open(model_path, 'r', encoding='utf-8') as f:
+        model_json = f.read()
+    return NaiveBayesImplementation.from_json(model_json)

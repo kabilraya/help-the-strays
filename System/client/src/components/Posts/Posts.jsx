@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
 const Posts = ({ userId }) => {
-  //Temporary data for viewing and styling
   const navigate = useNavigate();
   const query = userId ? `/posts?userId=${userId}` : "/posts";
   const { isPending, error, data } = useQuery({

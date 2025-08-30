@@ -8,7 +8,7 @@ export const getPosts = (req, res) => {
   const category = req.query.category;
   const token = req.cookies.accessToken;
 
-  console.log("Query parameters:", { userId, category }); // Debug
+  console.log("Query parameters:", { userId, category });
 
   if (!token) return res.status(401).json("Not Logged in");
 
@@ -18,11 +18,9 @@ export const getPosts = (req, res) => {
     let q = "";
     let values = [];
 
-    // Debug: Check what parameters we received
     console.log("Processing request with:", { userId, category });
 
     if (userId && !category) {
-      // Only userId provided - get user's posts
       q = `
         SELECT 
           p.*, 
@@ -35,12 +33,11 @@ export const getPosts = (req, res) => {
         LEFT JOIN likes AS l ON l.likePostId = p.id
         WHERE p.userid = ?
         GROUP BY p.id
-        ORDER BY p.createddate DESC
+        ORDER BY likeCount DESC
       `;
       values = [userId];
       console.log("Fetching user posts for userId:", userId);
     } else if (category && !userId) {
-      // Only category provided - get category posts
       q = `
         SELECT 
           p.*, 
@@ -53,7 +50,7 @@ export const getPosts = (req, res) => {
         LEFT JOIN likes AS l ON l.likePostId = p.id
         WHERE p.category = ?
         GROUP BY p.id
-        ORDER BY p.createddate DESC
+        ORDER BY likeCount DESC
       `;
       values = [category];
       console.log("Fetching category posts for category:", category);
@@ -70,7 +67,7 @@ export const getPosts = (req, res) => {
         LEFT JOIN likes AS l ON l.likePostId = p.id
         WHERE p.userid = ? AND p.category = ?
         GROUP BY p.id
-        ORDER BY p.createddate DESC
+        ORDER BY likeCount DESC
       `;
       values = [userId, category];
       console.log("Fetching user's category posts:", { userId, category });
@@ -86,7 +83,7 @@ export const getPosts = (req, res) => {
         JOIN users AS u ON u.id = p.userid
         LEFT JOIN likes AS l ON l.likePostId = p.id
         GROUP BY p.id
-        ORDER BY p.createddate DESC
+        ORDER BY likeCount DESC
       `;
       console.log("Fetching all posts");
     }

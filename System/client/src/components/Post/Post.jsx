@@ -61,7 +61,7 @@ const Post = ({ post }) => {
         </div>
         <div className="content">
           <p>{post.captions}</p>
-          <img src={"/uploads/" + post.image}></img>
+          {post.image && <img src={"/uploads/" + post.image}></img>}
         </div>
         <div className="info">
           <div className="info-part">

@@ -2,14 +2,14 @@ import "./share.scss";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "../../axios";
 import Image from "../../assets/8.png";
-
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 
 const Share = () => {
   const { currentUser } = useContext(AuthContext);
   const [file, setFile] = useState(null);
-  const [caption, setCaption] = useState(null);
+  const [caption, setCaption] = useState("");
+  const [error, setError] = useState("");
   const queryClient = useQueryClient();
 
   const upload = async () => {
@@ -20,6 +20,7 @@ const Share = () => {
       return res.data;
     } catch (err) {
       console.log(err);
+      return null;
     }
   };
 
@@ -28,15 +29,47 @@ const Share = () => {
       return makeRequest.post("/posts", newPost);
     },
     onSuccess: () => {
+      setCaption("");
+      setFile(null);
+      setError("");
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+    onError: (error) => {
+      setError("Failed to create post. Please Try Again.");
     },
   });
 
   const handleClick = async (e) => {
     e.preventDefault();
-    let imgUrl = "";
-    if (file) imgUrl = await upload();
-    mutation.mutate({ caption, image: imgUrl });
+
+    if (!caption || !caption.trim()) {
+      if (file) {
+        setError("Text is required when adding an image");
+      } else {
+        setError("Text is required for your post");
+      }
+      return;
+    }
+
+    setError("");
+
+    try {
+      let imgUrl = null;
+      if (file) {
+        imgUrl = await upload();
+      }
+      mutation.mutate({
+        caption: caption.trim(),
+        image: imgUrl,
+      });
+    } catch (err) {
+      setError("Failed to upload image. Please try again");
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setFile(null);
+    setError("");
   };
 
   return (
@@ -48,19 +81,28 @@ const Share = () => {
             <input
               type="text"
               placeholder={`What's on your mind ${currentUser.name}?`}
+              value={caption}
               onChange={(e) => setCaption(e.target.value)}
             />
           </div>
           <div className="right">
             {file && (
-              <img
-                className="file"
-                alt=""
-                src={URL.createObjectURL(file)}
-              ></img>
+              <div className="file-preview">
+                <img
+                  className="file"
+                  alt="Preview"
+                  src={URL.createObjectURL(file)}
+                />
+                <button className="remove-file" onClick={handleRemoveFile}>
+                  ×
+                </button>
+              </div>
             )}
           </div>
         </div>
+
+        {error && <div className="error-message">{error}</div>}
+
         <hr />
         <div className="bottom">
           <div className="left">
