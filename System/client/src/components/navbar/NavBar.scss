@@ -15,6 +15,7 @@
     right: 0;
     a {
       text-decoration: none;
+      color: inherit;
     }
     // margin-bottom: 2px;
     z-index: 999;
@@ -25,6 +26,9 @@
       span {
         font-weight: bold;
         font-size: 20px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
         color: themed("logo");
       }
       .search {

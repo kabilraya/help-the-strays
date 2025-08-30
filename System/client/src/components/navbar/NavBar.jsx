@@ -10,6 +10,7 @@ import { useContext } from "react";
 import { DarkModeContext } from "../../context/darkModeContext";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import { AuthContext } from "../../context/authContext";
+import PetsIcon from "@mui/icons-material/Pets";
 const NavBar = () => {
   const { toggle, darkMode } = useContext(DarkModeContext);
   const { currentUser } = useContext(AuthContext);
@@ -17,9 +18,14 @@ const NavBar = () => {
     <div className="NavBar">
       <div className="left">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span>PROTECT STRAYS</span>
+          <span>
+            <PetsIcon></PetsIcon>Help the Strays
+          </span>
         </Link>
-        <HomeOutlinedIcon />
+        <Link to="/" style={{ textDecoration: "none" }}>
+          <HomeOutlinedIcon />
+        </Link>
+
         {darkMode ? (
           <LightModeOutlinedIcon onClick={toggle} />
         ) : (
