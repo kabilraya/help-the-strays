@@ -12,6 +12,7 @@
       padding: 20px;
 
       .user {
+        position: relative;
         display: flex;
         justify-content: space-between;
         align-items: center;
@@ -35,6 +36,23 @@
             span {
               font-weight: 500;
               color: themed("textColor");
+            }
+          }
+        }
+        .drop {
+          position: absolute;
+          top: 100%;
+          z-index: 1000;
+          border-radius: 5px;
+          min-width: 120px;
+          right: 0;
+          background-color: themed("bgSoft");
+          padding: 10px 15px;
+
+          span {
+            cursor: pointer;
+            &:hover {
+              background-color: themed("bg");
             }
           }
         }

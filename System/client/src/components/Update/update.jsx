@@ -4,6 +4,7 @@ import "./update.scss";
 import React, { useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useContext } from "react";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
 
 const Update = ({ setOpenUpdate, user }) => {
   const { setCurrentUser } = useContext(AuthContext);
@@ -81,31 +82,42 @@ const Update = ({ setOpenUpdate, user }) => {
         <div className="left"></div>
         <div className="right">
           <form>
-            <input
-              type="file"
-              placeholder="CoverPhoto"
-              onChange={(e) => setCover(e.target.files[0])}
-            ></input>
-            {cover && (
-              <img
-                className="file"
-                alt=""
-                src={URL.createObjectURL(cover)}
-              ></img>
-            )}
-            <input
-              type="file"
-              placeholder="ProfilePic"
-              onChange={(e) => setProfile(e.target.files[0])}
-            ></input>
-
-            {profile && (
-              <img
-                className="file"
-                alt=""
-                src={URL.createObjectURL(profile)}
-              ></img>
-            )}
+            <div className="upload">
+              <label htmlFor="coverUpload" className="file-label">
+                <CameraAltIcon></CameraAltIcon>Upload Coverphoto
+              </label>
+              <input
+                type="file"
+                onChange={(e) => setCover(e.target.files[0])}
+                id="coverUpload"
+                hidden
+              ></input>
+              {cover && (
+                <img
+                  className="file"
+                  alt=""
+                  src={URL.createObjectURL(cover)}
+                ></img>
+              )}
+            </div>
+            <div className="upload">
+              <label htmlFor="profileUpload" className="file-label">
+                <CameraAltIcon></CameraAltIcon>Upload Profile
+              </label>
+              <input
+                type="file"
+                id="profileUpload"
+                onChange={(e) => setProfile(e.target.files[0])}
+                hidden
+              ></input>
+              {profile && (
+                <img
+                  className="file"
+                  alt=""
+                  src={URL.createObjectURL(profile)}
+                ></img>
+              )}
+            </div>
             <input
               type="text"
               name="name"

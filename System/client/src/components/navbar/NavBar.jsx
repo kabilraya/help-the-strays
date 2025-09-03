@@ -5,15 +5,27 @@ import VolunteerActivismOutlinedIcon from "@mui/icons-material/VolunteerActivism
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { Link } from "react-router-dom";
-import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/darkModeContext";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import { AuthContext } from "../../context/authContext";
 import PetsIcon from "@mui/icons-material/Pets";
+import { makeRequest } from "../../axios";
 const NavBar = () => {
+  const navigate = useNavigate();
+  const [openDropdown, setOpenDropdown] = useState(false);
   const { toggle, darkMode } = useContext(DarkModeContext);
   const { currentUser } = useContext(AuthContext);
+  const logout = async (e) => {
+    try {
+      await makeRequest.post("/auth/logout");
+      localStorage.removeItem("user");
+    } catch (err) {
+      console.log(err.response.data);
+    }
+    navigate("/login");
+  };
   return (
     <div className="NavBar">
       <div className="left">
@@ -41,16 +53,21 @@ const NavBar = () => {
       <div className="right">
         <AccountCircleOutlinedIcon />
         <NotificationsNoneOutlinedIcon />
-        <Link to={`/profile/${currentUser.id}`}>
-          <div className="user">
-            <img
-              src={"/uploads/" + currentUser.profilepic}
-              loading="lazy"
-              alt="Profile Picture"
-            ></img>
-            <span>{currentUser.username}</span>
+
+        <div className="user" onClick={() => setOpenDropdown(!openDropdown)}>
+          <img
+            src={"/uploads/" + currentUser.profilepic}
+            loading="lazy"
+            alt="Profile Picture"
+          ></img>
+          <span>{currentUser.username}</span>
+        </div>
+        {openDropdown && (
+          <div className="dropdown">
+            <Link to={`/profile/${currentUser.id}`}>Profile</Link>
+            <span onClick={logout}>Logout</span>
           </div>
-        </Link>
+        )}
       </div>
     </div>
   );

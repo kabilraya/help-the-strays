@@ -34,20 +34,41 @@ const Share = () => {
       setError("");
       queryClient.invalidateQueries({ queryKey: ["posts"] });
     },
-    onError: (error) => {
+    onError: () => {
       setError("Failed to create post. Please Try Again.");
     },
   });
+
+  const checkImageWithML = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("http://localhost:8001/predict", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) throw new Error("ML server error");
+
+      const result = await res.json();
+      console.log("ML Prediction:", result); // DEBUG: log prediction score
+      return result.accepted;
+    } catch (err) {
+      console.error("ML API error:", err);
+      return false;
+    }
+  };
 
   const handleClick = async (e) => {
     e.preventDefault();
 
     if (!caption || !caption.trim()) {
-      if (file) {
-        setError("Text is required when adding an image");
-      } else {
-        setError("Text is required for your post");
-      }
+      setError(
+        file
+          ? "Text is required when adding an image"
+          : "Text is required for your post"
+      );
       return;
     }
 
@@ -56,8 +77,14 @@ const Share = () => {
     try {
       let imgUrl = null;
       if (file) {
+        const isAnimal = await checkImageWithML();
+        if (!isAnimal) {
+          setError("Not Allowed: Uploaded image is not an animal");
+          return;
+        }
         imgUrl = await upload();
       }
+
       mutation.mutate({
         caption: caption.trim(),
         image: imgUrl,

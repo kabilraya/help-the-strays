@@ -62,15 +62,18 @@ const Profile = () => {
       <div className="profileContainer">
         <div className="uInfo">
           <div className="left">
-            <a href="https://web.whatsapp.com/">
+            {/* <a href="https://web.whatsapp.com/">
               <WhatsAppIcon fontSize="medium" />
-            </a>
-            <a href="#">
+            </a> */}
+            {/* <a href="#">
               <PhoneAndroidOutlinedIcon fontSize="medium" />
-            </a>
+            </a> */}
           </div>
           <div className="center">
-            <span>{data && data.name}</span>
+            <span>
+              <PhoneAndroidOutlinedIcon fontSize="medium" />
+              {data && data.name}
+            </span>
             {userId == currentUser.id && data ? (
               <button onClick={() => setOpenUpdate(true)}>Update</button>
             ) : (
@@ -82,9 +85,9 @@ const Profile = () => {
             )}
           </div>
           <div className="right">
-            <a href="www.gmail.com">
+            {/* <a href="www.gmail.com">
               <EmailOutlinedIcon fontSize="medium" />
-            </a>
+            </a> */}
           </div>
         </div>
         <Posts userId={userId} />

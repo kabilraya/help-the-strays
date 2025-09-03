@@ -19,6 +19,22 @@ const Register = () => {
   const handleClick = async (e) => {
     e.preventDefault();
 
+    if (
+      !inputs.username.trim() ||
+      !inputs.email.trim() ||
+      !inputs.password ||
+      !inputs.name.trim()
+    ) {
+      setError("All fields are required.");
+      return;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(inputs.email)) {
+      setError("Please enter a valid email address.");
+      return;
+    }
+
     try {
       await axios.post("http://localhost:8000/api/auth/register", inputs);
     } catch (err) {

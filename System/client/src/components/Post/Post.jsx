@@ -12,6 +12,7 @@ import { makeRequest } from "../../axios";
 import { AuthContext } from "../../context/authContext";
 
 const Post = ({ post }) => {
+  const [openDropdown, setOpenDropdown] = useState(false);
   const { currentUser } = useContext(AuthContext);
   const { isLoading, error, data } = useQuery({
     queryKey: ["likes", post.id],
@@ -33,9 +34,21 @@ const Post = ({ post }) => {
       queryClient.invalidateQueries({ queryKey: ["likes"] });
     },
   });
+  const deleteMutation = useMutation({
+    mutationFn: (postId) => {
+      return makeRequest.delete("/posts/" + postId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
 
   const handleLike = () => {
     mutation.mutate(data.includes(currentUser.id));
+  };
+
+  const deletePost = () => {
+    deleteMutation.mutate(post.id);
   };
 
   const [commentOpen, openComment] = useState(false);
@@ -57,7 +70,14 @@ const Post = ({ post }) => {
             </div>
           </div>
 
-          <MoreVertOutlinedIcon />
+          <MoreVertOutlinedIcon
+            onClick={() => setOpenDropdown(!openDropdown)}
+          />
+          {openDropdown && (
+            <div className="drop">
+              <span onClick={deletePost}>Delete</span>
+            </div>
+          )}
         </div>
         <div className="content">
           <p>{post.captions}</p>

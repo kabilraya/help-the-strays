@@ -27,6 +27,11 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!inputs.username.trim() || !inputs.password.trim()) {
+      setError("Both username and password are required.");
+      return;
+    }
     try {
       await login(inputs);
       navigate("/");
