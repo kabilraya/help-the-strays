@@ -2,8 +2,6 @@ import { db } from "../connect.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 export const register = (req, res) => {
-  //check the user if exists
-
   const query = "SELECT * FROM users WHERE username= ?";
 
   db.query(query, [req.body.username], (err, data) => {
