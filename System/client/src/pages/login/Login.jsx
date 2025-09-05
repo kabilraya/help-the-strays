@@ -69,7 +69,13 @@ const Login = () => {
               name="password"
               onChange={handleChange}
             ></input>
-            {err && err}
+              {err && (
+    <span style={{ color: "red" }}>
+      {typeof err === "object"
+        ? err.sqlMessage || err.message || JSON.stringify(err)
+        : err}
+    </span>
+  )}
             <button onClick={handleLogin}>Login</button>
           </form>
         </div>

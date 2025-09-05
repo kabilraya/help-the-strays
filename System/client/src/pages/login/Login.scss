@@ -1,3 +1,4 @@
+
 .Login {
   height: 100vh;
   background-color: rgb(240, 242, 245);
@@ -13,8 +14,8 @@
     overflow: hidden;
 
     .left {
-      background: url("https://images.pexels.com/photos/26263124/pexels-photo-26263124.jpeg")
-        center;
+       
+      background: url("~../../assets/bglogin.jpeg") center;
       background-size: cover;
       flex: 1;
       padding: 50px;
@@ -28,8 +29,7 @@
         line-height: 100px;
       }
 
-      p {
-      }
+     
 
       span {
         font-size: 14px;
